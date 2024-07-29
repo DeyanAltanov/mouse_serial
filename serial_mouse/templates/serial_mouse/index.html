@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mouse Serial App</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="/view_data/">View Data</a>
+    </nav>
+    <main>
+        <button id="capture-btn">Capture</button>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Index.html script loaded.");
+
+            const captureBtn = document.getElementById('capture-btn');
+            const socket = new WebSocket('ws://127.0.0.1:8000/ws/serial/');
+
+            socket.onopen = function() {
+                console.log("WebSocket connection established.");
+            };
+
+            socket.onerror = function(error) {
+                console.error("WebSocket error: ", error);
+            };
+
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+                } else {
+                    console.error('WebSocket connection closed unexpectedly');
+                }
+            };
+
+            document.addEventListener('mousemove', function(event) {
+                const mouseData = {
+                    action: 'mouse_move',
+                    x: event.clientX,
+                    y: event.clientY
+                };
+                console.log(`Sending mouse data: ${JSON.stringify(mouseData)}`);
+                socket.send(JSON.stringify(mouseData));
+            });
+
+            captureBtn.onclick = function() {
+                const captureAction = {'action': 'capture'};
+                console.log(`Sending capture action: ${JSON.stringify(captureAction)}`);
+                socket.send(JSON.stringify(captureAction));
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log(`Received message: ${data.message}`);
+            };
+        });
+    </script>
+</body>
+</html>

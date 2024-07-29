@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Collected Data</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
+    <div class='data_div' id="captured_images">
+        <h1>Captured Images</h1>
+        <ul>
+            {% for capture in captures %}
+            <li>
+                <img src="{{ capture.image.url }}" alt="Captured Image" style="max-width: 200px;"/>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class='data_div' id="mouse_data">
+        <h1>Mouse Movement Data</h1>
+        <ul>
+            {% for data in mouse_data %}
+            <li>
+                X: {{ data.x }}, Y: {{ data.y }}, Timestamp: {{ data.timestamp }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
